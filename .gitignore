@@ -1,0 +1,13 @@
+# directory
+data/
+DataBase/0/
+log/
+node_modules/
+dbjs/
+
+# files
+*.dbjs
+*.result
+_cmd.exe
+package-lock.json
+*.bak
