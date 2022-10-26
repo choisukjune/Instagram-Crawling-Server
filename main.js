@@ -1,14 +1,19 @@
+
+
+
 var fs = require( "fs" );
 var https = require( "https" );
 
 
 var PROJECT_PATH = __dirname + "/";
-const puppeteer = require('puppeteer-extra');
-const StealthPlugin = require('puppeteer-extra-plugin-stealth');
+var puppeteer = require('puppeteer-extra');
+var StealthPlugin = require('puppeteer-extra-plugin-stealth');
 
 global.CONST = {};
 global.CONST.Telegram = {};
 global.CONST.Telegram.chat_id = "2104588399"
+
+global.browser = null;
 
 var option = { 
     headless: false,
@@ -74,12 +79,12 @@ global.page = null;
 
 (async () => {
 	await puppeteer.use(StealthPlugin())
-	var browser = await puppeteer.launch( option )
+	global.browser = await puppeteer.launch( option )
 
     var startTime = new Date();
     console.log( '[s] - ' + startTime )
 
-    global.page = await browser.newPage()
+    global.page = await global.browser.newPage()
 	await global.page.setUserAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.125 Safari/537.36");
 	await global.page.evaluate("navigator.userAgent");
     await global.page.goto('https://www.instagram.com/bts.bighitofficial/?__a=1&__d=1');
@@ -161,16 +166,27 @@ global.page = null;
     // });
     var data = await global.page.evaluate(() => document.querySelector('*').outerHTML);
 
-    fs.writeFileSync( "test.json",data.replace(`<html><head><meta name="color-scheme" content="light dark"></head><body><pre style="word-wrap: break-word; white-space: pre-wrap;">`,"")
-    .replace( `</pre></body></html>`,"" ),{flag:"w"});
+    var result = data.replace(`<html><head><meta name="color-scheme" content="light dark"></head><body><pre style="word-wrap: break-word; white-space: pre-wrap;">`,"")
+        .replace( `</pre></body></html>`,"" );
+
+    fs.writeFileSync( "test.json",result,{flag:"w"});
+   
     await global.page.screenshot({ path: PROJECT_PATH + 'testresult.png', fullPage: true })
-    //await browser.close()
+    await browser.close()
 
     await global.page.goto('https://www.instagram.com/blackpinkofficial/')
+
+
 	await global.page.screenshot({ path: PROJECT_PATH + 'testresult.png', fullPage: true })
-	var endTime = new Date();
+	
+    
+    var endTime = new Date();
     console.log( '[e] - ' + endTime )
-	global.page.goto("http://naver.com")
+	
+    
+    global.page.goto("http://naver.com")
+
+    global.browser.close();
 })();
 //
 
